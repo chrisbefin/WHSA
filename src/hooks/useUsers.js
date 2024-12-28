@@ -1,25 +1,19 @@
 import { useState, useEffect, useCallback } from "react";
 import pb from "lib/pocketbase";
 
-const usePocketbaseEvents = () => {
-  const [events, setEvents] = useState([]);
-  const [userEvents, setUserEvents] = useState([]);
-  const [loadingEvents, setLoading] = useState(false);
-  const [errorEvents, setError] = useState(null);
+const usePocketbaseUsers = () => {
+  const [events, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const eventsCollection = "events";
-  const availabilityCollection = "availability";
-  const assignmentsCollection = "assignments";
-  const viewUserEventsCollection = "viewUserEvents"
 
   const fetchEvents = useCallback(async (query = {}) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await pb.collection(eventsCollection).getFullList({
-        sort:'-created',
-      });
+      const response = await pb.collection(eventsCollection).getFullList(query);
       setEvents(response);
     } catch (err) {
       setError(err.message);
@@ -29,30 +23,12 @@ const usePocketbaseEvents = () => {
   }, []);
 
   // Find upcoming events
-  const getFutureEvents = useCallback(async () => {
+  const queryFutureEvents = useCallback(async (record) => {
     setError(null);
 
     try {
-      const response = await pb.collection(eventsCollection).getFullList({
-        filter:'start_time>@now',
-      });
+      const response = await pb.collection(eventsCollection).create(record);
       return response;
-    } catch (err) {
-      setError(err.message);
-      throw err;
-    }
-  }, []);
-
-  // get a user's events
-  const getUserEvents = useCallback(async (userID) => {
-    setError(null);
-
-    try {
-      pb.autoCancellation(false);
-      const userEvents = await pb.collection(viewUserEventsCollection).getFullList({
-        filter: `aide = "${userID}"`,
-      });
-      setUserEvents(userEvents);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -86,11 +62,11 @@ const usePocketbaseEvents = () => {
   }, []);
 
   // Delete an event
-  const deleteEvent = useCallback(async (recordId) => {
+  const deleteEvent = useCallback(async (collectionName, recordId) => {
     setError(null);
 
     try {
-      await pb.collection(eventsCollection).delete(recordId);
+      await pb.collection(collectionName).delete(recordId);
     } catch (err) {
       setError(err.message);
       throw err;
@@ -99,12 +75,10 @@ const usePocketbaseEvents = () => {
 
   return {
     events,
-    userEvents,
-    loadingEvents,
-    errorEvents,
+    loading,
+    error,
     fetchEvents,
-    getFutureEvents,
-    getUserEvents,
+    queryFutureEvents,
     createEvent,
     updateEvent,
     deleteEvent,

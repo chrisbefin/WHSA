@@ -14,7 +14,7 @@ const useLogin = () => {
     {
       onSuccess: () => {
         if (pb.authStore.isValid) {
-          navigate("/home"); // Redirect to home page on successful login
+          navigate("/dashboard"); // Redirect to home page on successful login
         }
       },
       onError: (error) => {

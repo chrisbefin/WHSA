@@ -3,7 +3,6 @@ import useLogin from "hooks/useLogin";
 
 
 export default function Auth() {
-    // const logout = useLogout();
     const { mutate: login, isLoading, isError } = useLogin();
     const { register, handleSubmit, reset } = useForm();
 

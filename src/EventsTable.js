@@ -1,30 +1,41 @@
-import usePocketbaseUsers from "hooks/usePocketbaseUsers";
+import usePocketbaseEvents from "hooks/usePocketbaseEvents";
+import EventDetailModal from "EventDetailModal";
 import React, { useEffect, useContext, useMemo, useState } from "react";
 
 // TODO: make each row clickable to show a modal with details on a specific user
-const AidesTable = () => {
-  const { users, currentUser, loadingUsers, errorUsers, fetchUsers, getCurrentUser, createUser, deleteUser, updateUser } = usePocketbaseUsers();
+const EventsTable = () => {
+  const { events, loadingEvents, fetchEvents } = usePocketbaseEvents();
 
-  const [activeColumn, setActiveColumn] = useState(["last_name"]);
-  const [sortingColumn, setSortingColumn] = useState(["last_name"]);
+  const [activeColumn, setActiveColumn] = useState(["start_time"]);
+  const [sortingColumn, setSortingColumn] = useState(["start_time"]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState(users);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filteredData, setFilteredData] = useState(events);
 
   useEffect(() => {
-    fetchUsers();
-  }, [fetchUsers]);
+    fetchEvents();
+  }, [fetchEvents]);
 
   useEffect(() => {
     const term = searchTerm.toLowerCase();
-    const filtered = users.filter(
-      (user) =>
-      user.last_name.toLowerCase().includes(term) ||
-      user.preferred_name.toLowerCase().includes(term) ||
-      user.email.toLowerCase().includes(term) ||
-      user.service.toLowerCase().includes(term)
+    const filtered = events.filter(
+      (event) =>
+      event.event_title.toLowerCase().includes(term) ||
+      event.location.toLowerCase().includes(term)
     );
     setFilteredData(filtered);
-  }, [searchTerm, users])
+  }, [searchTerm, events])
+
+  const handleRowClick = (event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
+  };
 
   const sortByColumnAlpha = (column) => {
     if (sortingColumn?.includes(column)) {
@@ -68,10 +79,11 @@ const AidesTable = () => {
     setActiveColumn([`${column}`]);
   };
 
-  if (loadingUsers) {
+  if (loadingEvents) {
     return <p>Loading...</p>;
   }
   return (
+    <>
     <div className="min-h-screen h-full bg-white flex flex-col items-center justify-center py-4 sm:py-10 gap-12">
       <div className="w-full max-w-4xl px-4">
         <input
@@ -91,16 +103,16 @@ const AidesTable = () => {
                   <div className="flex items-center">
                     <svg
                       className={`w-4 h-4 cursor-pointer ${
-                        activeColumn?.includes("last_name")
+                        activeColumn?.includes("event_title")
                           ? "text-black"
                           : "text-[#BCBDBE] group-hover:text-black rotate-180"
                       } ${
-                        sortingColumn?.includes("last_name")
+                        sortingColumn?.includes("event_title")
                           ? "rotate-180"
                           : "rotate-0"
                       }
            `}
-                      onClick={() => sortByColumnAlpha("last_name")}
+                      onClick={() => sortByColumnAlpha("event_title")}
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
                       height="24"
@@ -117,24 +129,24 @@ const AidesTable = () => {
                     </svg>
                     <span
                       className="cursor-pointer pl-1"
-                      onClick={() => sortByColumnAlpha("last_name")}
+                      onClick={() => sortByColumnAlpha("event_title")}
                     >
-                      Last Name
+                      Event
                     </span>
                   </div>
                 </th>
                 <th className="py-3 px-3 flex items-center text-[#212B36] sm:text-base font-bold whitespace-nowrap group">
                   <svg
                     className={`w-4 h-4 cursor-pointer ${
-                      activeColumn?.includes("preferred_name")
+                      activeColumn?.includes("location")
                         ? "text-black"
                         : "text-[#BCBDBE] group-hover:text-black rotate-180"
                     } ${
-                      sortingColumn?.includes("preferred_name")
+                      sortingColumn?.includes("location")
                         ? "rotate-180"
                         : "rotate-0"
                     } `}
-                    onClick={() => sortByColumnAlpha("preferred_name")}
+                    onClick={() => sortByColumnAlpha("location")}
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"
@@ -151,24 +163,24 @@ const AidesTable = () => {
                   </svg>
                   <span
                     className="cursor-pointer pl-1"
-                    onClick={() => sortByColumnAlpha("preferred_name")}
+                    onClick={() => sortByColumnAlpha("location")}
                   >
-                    First Name
+                    Location
                   </span>
                 </th>
                 <th className="py-3 px-3 text-[#212B36] sm:text-base font-bold whitespace-nowrap group">
                   <div className="flex items-center">
                     <svg
                       className={`w-4 h-4 cursor-pointer ${
-                        activeColumn?.includes("service")
+                        activeColumn?.includes("start_time")
                           ? "text-black"
                           : "text-[#BCBDBE] group-hover:text-black rotate-180"
                       } ${
-                        sortingColumn?.includes("service")
+                        sortingColumn?.includes("start_time")
                           ? "rotate-180"
                           : "rotate-0"
                       } `}
-                      onClick={() => sortByColumnAlpha("service")}
+                      onClick={() => sortByColumnAlpha("start_time")}
                       xmlns="http://www.w3.org/2000/svg"
                       width="24"
                       height="24"
@@ -185,27 +197,27 @@ const AidesTable = () => {
                     </svg>
                     <span
                       className="cursor-pointer pl-1"
-                      onClick={() => sortByColumnAlpha("service")}
+                      onClick={() => sortByColumnAlpha("start_time")}
                     >
-                      Service
+                      Date
                     </span>
                   </div>
                 </th>
                 <th className="py-3 px-3 text-[#212B36] sm:text-base font-bold whitespace-nowrap">
-                  Email
+                  Num Aides
                 </th>
                 <th className="flex items-center py-3 px-3 text-[#212B36] sm:text-base font-bold whitespace-nowrap group">
                   <svg
                     className={`w-4 h-4 cursor-pointer  ${
-                      sortingColumn?.includes("num_events")
+                      sortingColumn?.includes("num_guests")
                         ? "rotate-180"
                         : "rotate-0"
                     } ${
-                      activeColumn?.includes("num_events")
+                      activeColumn?.includes("num_guests")
                         ? "text-black"
                         : "text-[#BCBDBE] group-hover:text-black rotate-180"
                     }`}
-                    onClick={() => sortByColumnNumeric("num_events")}
+                    onClick={() => sortByColumnNumeric("num_guests")}
                     xmlns="http://www.w3.org/2000/svg"
                     width="24"
                     height="24"
@@ -222,30 +234,33 @@ const AidesTable = () => {
                   </svg>
                   <span
                     className="cursor-pointer pl-1"
-                    onClick={() => sortByColumnNumeric("num_events")}
+                    onClick={() => sortByColumnNumeric("num_guests")}
                   >
-                    # of Events
+                    Num Guests
                   </span>
                 </th>
               </tr>
             </thead>
             <tbody>
               {filteredData?.map((data, index) => (
-                <tr key={index}>
+                <tr key={index}
+                    onClick={() => handleRowClick(data)}
+                    className="cursor-pointer hover:bg-gray-50"
+                >
                   <td className="py-2 px-3 font-normal text-base border-t whitespace-nowrap">
-                    {data?.last_name}
+                    {data?.event_title}
                   </td>
                   <td className="py-2 px-3 font-normal text-base border-t whitespace-nowrap">
-                    {data?.preferred_name}
+                    {data?.location}
                   </td>
                   <td className="py-2 px-3 text-base font-normal border-t whitespace-nowrap">
-                    {data?.service}
+                  {new Date(data?.start_time).toLocaleDateString()}
                   </td>
                   <td className="py-2 px-3 text-base font-normal border-t min-w-[250px]">
-                    {data?.email}
+                    {data?.num_required_aides}
                   </td>
                   <td className="py-5 px-4 text-base font-normal border-t">
-                    {data?.num_events}
+                    {data?.num_guests}
                   </td>
                 </tr>
               ))}
@@ -257,6 +272,13 @@ const AidesTable = () => {
         </div>
       </div>
     </div>
+
+    <EventDetailModal 
+    isOpen={isModalOpen}
+    onClose={handleCloseModal}
+    event={selectedEvent}
+    />
+    </>
   );
 };
-export default AidesTable;
+export default EventsTable;

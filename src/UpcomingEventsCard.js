@@ -5,14 +5,14 @@ export default function UpcomingEventsCard ({events}) {
         events = events.slice(0, 3);
     }
     return (
-        <div className="border rounded-lg p-4 border-gray-200 bg-gray-300">
-            <h1 className="text-2xl font-bold mb-4">Upcoming Events</h1>
+            <>
+            <h1 className="px-4 py-2 text-2xl font-bold mb-4">Upcoming Events</h1>
             {events.length > 0 ? (
             <ul className="space-y-4">
             {events.map((event) => (
-                <li key={event.id} className="border rounded-lg p-4 shadow-sm bg-white">
+                <li key={event.id} className="border rounded-lg p-2 bg-white">
                 <h2 className="text-xl font-semibold">{event.event_title}</h2>
-                <p className="text-gray-700">
+                <p className="text-sm">
                     <b>Location: </b>{event.location}
                 </p>
                 <p className="text-sm">
@@ -30,6 +30,15 @@ export default function UpcomingEventsCard ({events}) {
             ) : (
                 <p>No events available at the moment.</p>
             )}
-        </div>
+            </>
+            // <div className="px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10">
+            //     <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
+            //     Mobile friendly
+            //     </p>
+            //     <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
+            //     Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.
+            //     </p>
+            // </div>
     )
+
 }

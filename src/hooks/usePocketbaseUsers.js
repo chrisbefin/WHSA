@@ -32,6 +32,7 @@ const usePocketbaseUsers = () => {
     setError(null);
 
     try {
+      pb.autoCancellation(false);
       const response = await pb.collection(usersCollection).getFullList({
         filter: `id="${id}"`,
       });

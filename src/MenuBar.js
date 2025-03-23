@@ -13,6 +13,7 @@ const navigation = [
     { name: 'Events', href: '/events' },
     { name: 'Availability', href: '/availability' },
     { name: 'Aides', href: '/aides' },
+    { name: 'Admin', href: '/admin' },
 ];
 
 function classNames(...classes) {
@@ -70,14 +71,14 @@ export default function MenuBar () {
                     </div>
                 </div>
                 <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                    <button
+                    {/* <button
                     type="button"
                     className="relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                     >
                     <span className="absolute -inset-1.5" />
                     <span className="sr-only">View notifications</span>
                     <BellIcon aria-hidden="true" className="size-6" />
-                    </button>
+                    </button> */}
 
                     {/* Profile dropdown */}
                     <ProfileDropdown />

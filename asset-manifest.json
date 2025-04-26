@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/react-gh-pages/static/css/main.0185716d.css",
+    "main.js": "/react-gh-pages/static/js/main.c653428d.js",
+    "static/media/white-house.png": "/react-gh-pages/static/media/white-house.5f2b5137768e8985b173.png",
+    "index.html": "/react-gh-pages/index.html",
+    "main.0185716d.css.map": "/react-gh-pages/static/css/main.0185716d.css.map",
+    "main.c653428d.js.map": "/react-gh-pages/static/js/main.c653428d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.0185716d.css",
+    "static/js/main.c653428d.js"
+  ]
+}

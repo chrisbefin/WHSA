@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "./static/css/main.0185716d.css",
-    "main.js": "./static/js/main.3525f217.js",
-    "static/media/white-house.png": "./static/media/white-house.5f2b5137768e8985b173.png",
-    "index.html": "./index.html",
-    "main.0185716d.css.map": "./static/css/main.0185716d.css.map",
-    "main.3525f217.js.map": "./static/js/main.3525f217.js.map"
+    "main.css": "/WHSA/static/css/main.0185716d.css",
+    "main.js": "/WHSA/static/js/main.20004c93.js",
+    "static/media/white-house.png": "/WHSA/static/media/white-house.5f2b5137768e8985b173.png",
+    "index.html": "/WHSA/index.html",
+    "main.0185716d.css.map": "/WHSA/static/css/main.0185716d.css.map",
+    "main.20004c93.js.map": "/WHSA/static/js/main.20004c93.js.map"
   },
   "entrypoints": [
     "static/css/main.0185716d.css",
-    "static/js/main.3525f217.js"
+    "static/js/main.20004c93.js"
   ]
 }

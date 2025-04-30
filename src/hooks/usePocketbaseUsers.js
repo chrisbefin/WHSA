@@ -43,20 +43,35 @@ const usePocketbaseUsers = () => {
     }
   }, []);
 
-  // Create a new event
-  const createUser = useCallback(async (record) => {
+  // Create a new user
+  const createNewUserAccount = useCallback(async (record) => {
     setError(null);
 
+    const data = {
+      "password": record.password,
+      "passwordConfirm": record.confirm_password,
+      "email": record.personal_email,
+      "emailVisibility": false,
+      "first_name": record.first_name,
+      "middle_name": record.middle_name,
+      "preferred_name": record.preferred_name,
+      "last_name": record.last_name,
+      "cell_phone": record.cell_phone,
+      "grade": record.grade,
+      "service": record.service,
+      "service_email": record.service_email,
+      "DOB": record.DOB
+    };
     try {
-      const response = await pb.collection(eventsCollection).create(record);
-      return response;
+      const record = await pb.collection(usersCollection).create(data);
+      return record;
     } catch (err) {
       setError(err.message);
       throw err;
-    }
+    } 
   }, []);
 
-  // Update an event
+  // Update a user
   const updateUser = useCallback(async (recordId, updatedData) => {
     setError(null);
 
@@ -88,7 +103,7 @@ const usePocketbaseUsers = () => {
     errorUsers,
     fetchUsers,
     getCurrentUser,
-    createUser,
+    createNewUserAccount,
     updateUser,
     deleteUser,
   };

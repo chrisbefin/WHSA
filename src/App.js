@@ -1,6 +1,6 @@
 import Auth from "Auth";
 import React, { useContext } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthContext } from "AuthContext";
 import MenuBar from "MenuBar";
 import Availability from "Availability";
@@ -8,6 +8,7 @@ import Evs from "EventsTable";
 import AidesTable from "AidesTable";
 import TestDash from "TestDash";
 import Admin from "Admin";
+import CreateUser from "CreateUser";
 
 export default function App() {
   const { isAuthenticated } = useContext(AuthContext);
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/availability" element={isAuthenticated ? <Availability /> : <Navigate to="/login" />} />
         <Route path="/aides" element={isAuthenticated ? <AidesTable /> : <Navigate to="/login" />} />
         <Route path="/admin" element={isAuthenticated ? <Admin /> : <Navigate to="/login" />} />
+        <Route path="/createUser" element={ <CreateUser />} />
 
         </Routes>
       </Router>

@@ -54,27 +54,6 @@ export default function Auth() {
                   {...register("password")}
                 />
               </div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="remember"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  />
-                  <label
-                    htmlFor="remember"
-                    className="ml-2 block text-sm text-gray-700"
-                  >
-                    Remember me
-                  </label>
-                </div>
-                <a
-                  href="#"
-                  className="text-sm text-blue-500 hover:underline"
-                >
-                  Forgot Password?
-                </a>
-              </div>
               <button
                 type="submit"
                 disabled={isLoading}
@@ -85,7 +64,7 @@ export default function Auth() {
               </button>
             </form>
             <p className="mt-4 text-sm text-center text-gray-600">
-              <a href="#" className="text-blue-500 hover:underline">
+              <a href="#/createUser" className="text-blue-500 hover:underline">
                 Create an Account
               </a>
             </p>

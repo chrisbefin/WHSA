@@ -76,8 +76,7 @@ const usePocketbaseUsers = () => {
     setError(null);
 
     try {
-      const response = await pb.collection(eventsCollection).update(recordId, updatedData);
-      return response;
+      const response = await pb.collection(usersCollection).update(recordId, updatedData);
     } catch (err) {
       setError(err.message);
       throw err;

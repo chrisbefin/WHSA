@@ -94,7 +94,7 @@ const usePocketbaseAssignments = () => {
       "aide": userId,
       "event": eventId,
       // hard code role as default for now, future to do
-      "role": [ "0gz4la9ox4094an" ],
+      // "role": [ "0gz4la9ox4094an" ],
       "no_show": false
     };
     // record exists, do nothing

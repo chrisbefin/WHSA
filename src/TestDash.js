@@ -1,74 +1,84 @@
 import usePocketbaseUsers from "hooks/usePocketbaseUsers";
 import usePocketbaseEvents from "hooks/usePocketbaseEvents";
-import React, { useEffect, useContext, useMemo, useState } from "react";
+import React, { useEffect, useContext } from "react";
 import pb from "lib/pocketbase";
 import { AuthContext } from "AuthContext";
 import UpcomingEventsCard from "UpcomingEventsCard";
 import UserDataCard from "UserDataCard";
 import AidesCard from "AidesCard";
 
-
 export default function TestDash() {
-    const { events, userEvents, loadingEvents, errorEvents, futureEvents, fetchEvents, getUserEvents, getFutureEvents } = usePocketbaseEvents();
-    const { users, currentUser, loadingUsers, errorUsers, fetchUsers, getCurrentUser, createUser, deleteUser, updateUser } = usePocketbaseUsers();
-    const user = pb.authStore.record;
-    const { isAuthenticated } = useContext(AuthContext);
+  const { futureEvents, getFutureEvents } = usePocketbaseEvents();
+  const { currentUser, getCurrentUser } = usePocketbaseUsers();
+  const user = pb.authStore.record;
+  const { isAuthenticated } = useContext(AuthContext);
 
-    useEffect(() => {
+  useEffect(() => {
     getCurrentUser(user.id);
     getFutureEvents();
-    }, [getCurrentUser, getFutureEvents]);
+  }, [getCurrentUser, getFutureEvents]);
 
-    if (!isAuthenticated) return null;
+  if (!isAuthenticated) return null;
 
-    return (
-      <div className="bg-gray-50 py-24 sm:py-32">
-        <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-          <p className="mx-auto mt-2 max-w-lg text-balance text-center text-4xl font-semibold tracking-tight text-gray-950 sm:text-5xl">
-          Welcome, {currentUser.preferred_name}!
+  return (
+    <div className="bg-gradient-to-b from-gray-50 to-gray-100 min-h-screen py-16 sm:py-24">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Welcome Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+            <span className="inline-block bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              Welcome, {currentUser?.preferred_name || "User"}!
+            </span>
+          </h1>
+          <p className="mt-3 text-lg text-gray-500">
+            Here's everything you need to know today
           </p>
-          <div className="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
-            <div className="border rounded-lg relative lg:row-span-2">
-              <div className="absolute inset-px rounded-lg bg-white lg:rounded-l-[2rem]"></div>
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg+1px))] lg:rounded-l-[calc(2rem)]">
-                <UpcomingEventsCard events={futureEvents}/>
+        </div>
+
+        {/* Dashboard Grid */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {/* Upcoming Events Card - Spans full width on mobile, 2 columns on larger screens */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-2 xl:col-span-2">
+            <div className="bg-white overflow-hidden shadow-lg rounded-2xl transition-all duration-300 hover:shadow-xl h-full">
+              <div className="p-1">
+                <UpcomingEventsCard events={futureEvents} />
               </div>
-              {/* <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 lg:rounded-l-[2rem]"></div> */}
             </div>
-            <div className="relative max-lg:row-start-1">
-              <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem]"></div>
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
-                <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                  <UserDataCard user={currentUser}/>
-                </div>
+          </div>
+
+          {/* User Data Card */}
+          <div className="col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1">
+            <div className="bg-white overflow-hidden shadow-lg rounded-2xl transition-all duration-300 hover:shadow-xl h-full">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Your Profile</h2>
+                <UserDataCard user={currentUser} />
               </div>
-              <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem]"></div>
             </div>
-            <div className="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-              <div className="absolute inset-px rounded-lg bg-white"></div>
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]">
-                <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                  <AidesCard/>
-                </div>
+          </div>
+
+          {/* Aides Card */}
+          {/* <div className="col-span-1 md:col-span-1 lg:col-span-1 xl:col-span-1">
+            <div className="bg-white overflow-hidden shadow-lg rounded-2xl transition-all duration-300 hover:shadow-xl h-full">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Aides</h2>
+                <AidesCard />
               </div>
-              <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5"></div>
             </div>
-            <div className="relative lg:row-span-2">
-              <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"></div>
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
-                <div className="px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10">
-                  <p className="mt-2 text-lg font-medium tracking-tight text-gray-950 max-lg:text-center">
-                    Announcements
-                  </p>
-                </div>
-                <div className="relative min-h-[30rem] w-full grow">
+          </div> */}
+
+          {/* Announcements Card - Spans full width on mobile, 2+ columns on larger screens */}
+          <div className="col-span-1 md:col-span-2 lg:col-span-3 xl:col-span-1">
+            <div className="bg-white overflow-hidden shadow-lg rounded-2xl transition-all duration-300 hover:shadow-xl h-full min-h-64">
+              <div className="p-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Announcements</h2>
+                <div className="min-h-48">
+                  <p>No Announcements right now!</p>
                 </div>
               </div>
-              <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"></div>
             </div>
           </div>
         </div>
       </div>
-    )
-  }
-  
+    </div>
+  );
+}

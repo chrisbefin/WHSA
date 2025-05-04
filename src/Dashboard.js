@@ -40,7 +40,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <UpcomingEventsCard events={futureEvents}/>
           <UserDataCard user={currentUser}/>
-          <AidesCard/>
+          {/* <AidesCard/> */}
         </div>
       </div>
     </div>    

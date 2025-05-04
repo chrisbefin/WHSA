@@ -46,7 +46,7 @@ const usePocketbaseUsers = () => {
   // Create a new user
   const createNewUserAccount = useCallback(async (record) => {
     setError(null);
-
+    const DOB = new Date(record.DOB).toISOString();
     const data = {
       "password": record.password,
       "passwordConfirm": record.confirm_password,
@@ -60,7 +60,7 @@ const usePocketbaseUsers = () => {
       "grade": record.grade,
       "service": record.service,
       "service_email": record.service_email,
-      "DOB": record.DOB
+      "DOB": DOB
     };
     try {
       const record = await pb.collection(usersCollection).create(data);

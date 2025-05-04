@@ -87,7 +87,7 @@ export default function CreateUser() {
                 <CheckIcon className="h-8 w-8 text-green-600" />
               </div>
               <h2 className="text-2xl font-semibold text-green-600 mb-4 text-center">Account Created Successfully!</h2>
-              <p className="text-gray-600 mb-6 text-center">Your account has been created. Click below to proceed to login.</p>
+              <p className="text-gray-600 mb-6 text-center">Your account has been created. Contact the site administrator to have your account activated. You will not be able to log in until your account is active.</p>
               <button
                 onClick={handleNavigateToLogin}
                 className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"

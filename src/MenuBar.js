@@ -8,13 +8,6 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Dashboard from 'Dashboard';
 import ProfileDropdown from 'ProfileDropdown';
 
-const navigation = [
-    { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Events', href: '/events' },
-    { name: 'Availability', href: '/availability' },
-    { name: 'Aides', href: '/aides' },
-    { name: 'Admin', href: '/admin' },
-];
 
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
@@ -22,9 +15,17 @@ function classNames(...classes) {
 
 export default function MenuBar () {
     const logout = useLogout();
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, isAdmin } = useContext(AuthContext);
     const navigate = useNavigate();
 
+    const navigation = [
+        { name: 'Dashboard', href: '/dashboard' },
+        { name: 'Events', href: '/events' },
+        { name: 'Availability', href: '/availability' },
+        { name: 'Aides', href: '/aides' },
+        ...(isAdmin ? [{ name: 'Admin', href: '/admin' }] : [])
+    ];
+    
     if (!isAuthenticated) return null;
     return (
         <Disclosure as="nav" className="bg-gray-800">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle, DialogPanel } from '@headlessui/react';
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
+import pb from "lib/pocketbase";
 import usePocketbaseAssignments from 'hooks/usePocketbaseAssignments';
 import usePocketbaseAvailability from 'hooks/usePocketbaseAvailability';
 
@@ -12,7 +13,9 @@ const AssignmentModal = ({ isOpen, onClose, event }) => {
   const [error, setError] = useState(null);
 
   // Add state to track the selected tab
-const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
+
+  const user = pb.authStore.record;
 
   useEffect(() => {
     const fetchAssignments = async () => {
@@ -52,24 +55,36 @@ const [selectedTab, setSelectedTab] = useState(0);
       </div>
     );
   }
-
+  const roles = user.role
+  const USA_SPM = roles.includes("USA_SPM")
+  const USN_SPM = roles.includes("USN_SPM")
+  const USMC_SPM = roles.includes("USMC_SPM")
+  const USCG_SPM = roles.includes("USCG_SPM")
+  const USAF_SPM = roles.includes("USAF_SPM")
+  
   const tabs = [
-    {
-      name: 'USA'
-    },
-    {
-      name: 'USMC'
-    },
-    {
-      name: 'USN'
-    },
-    {
-        name: 'USCG'
-    },
-    {
-        name: 'DAF'
-    }
-  ]
+    ...(USA_SPM ? [{name: 'USA'}] : []),
+    ...(USMC_SPM ? [{name: 'USMC'}] : []),
+    ...(USN_SPM ? [{name: 'USN'}] : []),
+    ...(USCG_SPM ? [{name: 'USCG'}] : []),
+    ...(USAF_SPM ? [{name: 'DAF'}] : [])
+  ];
+  
+  // const tabs = [
+  //   {name: 'USA'},
+  //   {name: 'USMC'},
+  //   {name: 'USN'},
+  //   {name: 'USCG'},
+  //   {name: 'DAF'}
+  // ]
+
+//   const navigation = [
+//     { name: 'Dashboard', href: '/dashboard' },
+//     { name: 'Events', href: '/events' },
+//     { name: 'Availability', href: '/availability' },
+//     { name: 'Aides', href: '/aides' },
+//     ...(isAdmin ? [{ name: 'Admin', href: '/admin' }] : [])
+// ];
   
   return (
     <Dialog 

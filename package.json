@@ -1,7 +1,7 @@
 {
   "name": "pb_app",
   "version": "0.1.0",
-  "homepage": ".",
+  "homepage": "https://chrisbefin.github.io/WHSA",
   "private": true,
   "dependencies": {
     "@headlessui/react": "^2.2.0",

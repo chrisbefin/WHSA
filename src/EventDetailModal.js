@@ -38,7 +38,11 @@ const EventDetailModal = ({ isOpen, onClose, event }) => {
                 <p>{event.location}</p>
                 </div>
                 <div>
-                <h3 className="font-medium text-gray-500">Start Time</h3>
+                <h3 className="font-medium text-gray-500">Report Time</h3>
+                <p>{event.report_time!= null ? new Date(event.report_time).toLocaleString(): "N/A"}</p>
+                </div>
+                <div>
+                <h3 className="font-medium text-gray-500">In Place Time</h3>
                 <p>{new Date(event.start_time).toLocaleString()}</p>
                 </div>
                 <div>

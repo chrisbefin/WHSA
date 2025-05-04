@@ -3,13 +3,17 @@ import usePocketbaseEvents from 'hooks/usePocketbaseEvents';
 import AssignmentModal from 'AssignmentModal';
 import usePocketbaseAssignments from 'hooks/usePocketbaseAssignments';
 import CreateEventModal from 'CreateEventModal';
+import EventCard from 'EventCard';
+import EditEventModal from 'EditEventModal';
 
 const Admin = () => {
-  const { futureEvents, loadingEvents, getFutureEvents } = usePocketbaseEvents();
+  const { futureEvents, loadingEvents, getFutureEvents, updateEvent } = usePocketbaseEvents();
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [isAssignmentModalOpen, setisAssignmentModalOpen] = useState(false);
-  const [isCreateEventModalOpen, setisCreateEventModalOpen] = useState(false);
-  const {numAssignedAides, getAssignedAides} = usePocketbaseAssignments()  
+  const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
+  const [isCreateEventModalOpen, setIsCreateEventModalOpen] = useState(false);
+  const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
+  const [eventToEdit, setEventToEdit] = useState(null);
+  const { numAssignedAides, getAssignedAides } = usePocketbaseAssignments();
 
 
   useEffect(() => {
@@ -19,30 +23,39 @@ const Admin = () => {
 
   const handleEventCardClick = (event) => {
     setSelectedEvent(event);
-    setisAssignmentModalOpen(true);
+    setIsAssignmentModalOpen(true);
+  };
+
+  const handleEditEvent = (event) => {
+    setEventToEdit(event);
+    setIsEditEventModalOpen(true);
+  };
+
+  const handleSaveEditedEvent = async (updatedEvent) => {
+    try {
+       await updateEvent(updatedEvent);
+      getFutureEvents(); // Refresh the events list
+    } catch (error) {
+      console.error("Failed to update event:", error);
+    }
   };
 
   const handleCloseEventModal = () => {
-    setisAssignmentModalOpen(false);
+    setIsAssignmentModalOpen(false);
     setSelectedEvent(null);
   };
 
+  const handleCloseEditEventModal = () => {
+    setIsEditEventModalOpen(false);
+    setEventToEdit(null);
+  };
+
   const handleCreateEvent = () => {
-    setisCreateEventModalOpen(true);
-  }
+    setIsCreateEventModalOpen(true);
+  };
 
   const handleCloseCreateEventModal = () => {
-      setisCreateEventModalOpen(false);
-  }
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    setIsCreateEventModalOpen(false);
   };
 
   if (loadingEvents) {
@@ -69,40 +82,12 @@ const Admin = () => {
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {futureEvents.map((event) => (
-            <div
+            <EventCard
               key={event.id}
-              onClick={() => handleEventCardClick(event)}
-              className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow cursor-pointer"
-            >
-              <div className="p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  {event.event_title}
-                </h3>
-                
-                <div className="space-y-3">
-                  <div className="flex items-center text-gray-600">
-                    {/* <Calendar className="w-5 h-5 mr-2" /> */}
-                    <span>{formatDate(event.start_time)}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-600">
-                    {/* <MapPin className="w-5 h-5 mr-2" /> */}
-                    <span>{event.location}</span>
-                  </div>
-                  
-                  <div className="flex items-center text-gray-600">
-                    {/* <Users className="w-5 h-5 mr-2" /> */}
-                    <span>{event.num_required_aides} aides required</span>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-4 border-t">
-                  <div className="text-sm text-gray-500">
-                    {event.num_guests} guests expected
-                  </div>
-                </div>
-              </div>
-            </div>
+              event={event}
+              onCardClick={handleEventCardClick}
+              onEditClick={handleEditEvent}
+            />
           ))}
         </div>
 
@@ -112,10 +97,16 @@ const Admin = () => {
           event={selectedEvent}
         />
 
-
         <CreateEventModal
           isOpen={isCreateEventModalOpen}
           onClose={handleCloseCreateEventModal}
+        />
+
+        <EditEventModal
+          isOpen={isEditEventModalOpen}
+          onClose={handleCloseEditEventModal}
+          event={eventToEdit}
+          onSave={handleSaveEditedEvent}
         />
       </div>
     </div>

@@ -61,14 +61,16 @@ const usePocketbaseEvents = () => {
   }, []);
 
   // Create a new event
-  const createEvent = useCallback(async (title, startTime, endTime, notes, numAides, numGuests, uniform, location) => {
+  const createEvent = useCallback(async (title, reportTime, startTime, endTime, notes, numAides, numGuests, uniform, location) => {
     setError(null);
     startTime = new Date(startTime).toISOString();
-    endTime = new Date(endTime).toISOString();;
+    endTime = new Date(endTime).toISOString();
+    reportTime = new Date(reportTime).toISOString();
     const data = {
       "event_title": title,
       "start_time": startTime,
       "end_time": endTime,
+      "report_time": reportTime,
       "num_guests": numGuests,
       "num_required_aides": numAides,
       "location": location,
@@ -85,12 +87,26 @@ const usePocketbaseEvents = () => {
   }, []);
 
   // Update an event
-  const updateEvent = useCallback(async (recordId, updatedData) => {
+  const updateEvent = useCallback(async (updatedData) => {
     setError(null);
 
     try {
-      const response = await pb.collection(eventsCollection).update(recordId, updatedData);
-      return response;
+      const startTime = new Date(updatedData.start_time).toISOString();
+      const endTime = new Date(updatedData.end_time).toISOString();
+      const reportTime = new Date(updatedData.report_time).toISOString();
+      const data = {
+        "event_title": updatedData.event_title,
+        "report_time": reportTime,
+        "start_time": startTime,
+        "end_time": endTime,
+        "num_guests": updatedData.num_guests,
+        "num_required_aides": updatedData.num_required_aides,
+        "location": updatedData.location,
+        "uniform": updatedData.uniform,
+        "notes": updatedData.notes
+    };
+    
+    const record = await pb.collection('events').update(updatedData.id, data);
     } catch (err) {
       setError(err.message);
       throw err;

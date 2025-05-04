@@ -1,50 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogTitle, DialogPanel } from '@headlessui/react';
-import usePocketbaseEvents from 'hooks/usePocketbaseEvents';
 import { XMarkIcon } from '@heroicons/react/24/outline';
+import usePocketbaseEvents from 'hooks/usePocketbaseEvents';
 
-const CreateEventModal = ({ isOpen, onClose }) => {
-  const { createEvent }  = usePocketbaseEvents();
+const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [formData, setFormData] = useState({
+    event_title: '',
+    report_time: '',
+    start_time: '',
+    end_time: '',
+    location: '',
+    num_required_aides: 1,
+    num_guests: 0,
+    uniform: '',
+    notes: ''
+  });
 
-  const [eventTitle, setEventTitle] = useState('');
-  const [reportTime, setReportTime] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
-  const [notes, setNotes] = useState('');
-  const [numRequiredAides, setNumRequiredAides] = useState(1);
-  const [numGuests, setNumGuests] = useState(0);
-  const [uniform, setUniform] = useState('');
-  const [location, setLocation] = useState('');
+  useEffect(() => {
+    if (event) {
+      // Format the dates to yyyy-MM-ddThh:mm format for datetime-local input
+      const formatDateTime = (dateTimeStr) => {
+        if (!dateTimeStr) return '';
+        const dateTime = new Date(dateTimeStr);
+        return dateTime.toISOString().slice(0, 16);
+      };
+
+      setFormData({
+        event_title: event.event_title || '',
+        report_time: event.report_time ? formatDateTime(event.report_time) : '',
+        start_time: event.start_time ? formatDateTime(event.start_time) : '',
+        end_time: event.end_time ? formatDateTime(event.end_time) : '',
+        location: event.location || '',
+        num_required_aides: event.num_required_aides || 1,
+        num_guests: event.num_guests || 0,
+        uniform: event.uniform || '',
+        notes: event.notes || ''
+      });
+    }
+  }, [event]);
+
+  if (!isOpen || !event) return null;
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: name === 'num_required_aides' || name === 'num_guests' 
+        ? (value === "" ? "" : parseInt(value, 10)) 
+        : value,
+    }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page refresh
-  
-    if (!eventTitle || !reportTime || !startTime || !endTime || !location || !numRequiredAides) {
+    e.preventDefault();
+    
+    if (!formData.event_title || !formData.report_time || !formData.start_time || !formData.end_time || !formData.location) {
       setError("Please fill in all required fields.");
       return;
     }
-  
+    
     setIsSubmitting(true);
     setError(null);
-  
+
     try {
-      await createEvent(
-        eventTitle,
-        reportTime,
-        startTime,
-        endTime,
-        notes,
-        numRequiredAides,
-        numGuests,
-        uniform,
-        location
-      );
-  
-      onClose(); // Close modal on success
+      await onSave({ ...event, ...formData });
+      onClose();
     } catch (err) {
-      setError("Failed to create event. Please try again.");
+      setError("Failed to update event. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -64,7 +88,7 @@ const CreateEventModal = ({ isOpen, onClose }) => {
           <div className="border-b border-gray-200 px-6 py-4">
             <div className="flex justify-between items-center">
               <DialogTitle className="text-xl font-semibold text-gray-900">
-                Create Event
+                Edit Event
               </DialogTitle>
               <button 
                 onClick={onClose} 
@@ -91,8 +115,9 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                   <input
                     type="text"
                     id="event_title"
-                    value={eventTitle}
-                    onChange={(e) => setEventTitle(e.target.value)}
+                    name="event_title"
+                    value={formData.event_title}
+                    onChange={handleChange}
                     required
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                   />
@@ -106,8 +131,9 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                     <input
                       type="datetime-local"
                       id="report_time"
-                      value={reportTime}
-                      onChange={(e) => setReportTime(e.target.value)}
+                      name="report_time"
+                      value={formData.report_time}
+                      onChange={handleChange}
                       required
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     />
@@ -118,8 +144,9 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                     <input
                       type="datetime-local"
                       id="start_time"
-                      value={startTime}
-                      onChange={(e) => setStartTime(e.target.value)}
+                      name="start_time"
+                      value={formData.start_time}
+                      onChange={handleChange}
                       required
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     />
@@ -130,8 +157,9 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                     <input
                       type="datetime-local"
                       id="end_time"
-                      value={endTime}
-                      onChange={(e) => setEndTime(e.target.value)}
+                      name="end_time"
+                      value={formData.end_time}
+                      onChange={handleChange}
                       required
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     />
@@ -144,8 +172,9 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                     <input
                       type="text"
                       id="location"
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
                       required
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     />
@@ -160,9 +189,10 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                     <input
                       type="number"
                       id="num_required_aides"
+                      name="num_required_aides"
                       min="0"
-                      value={numRequiredAides}
-                      onChange={(e) => setNumRequiredAides(e.target.value === "" ? "" : parseInt(e.target.value, 10))}
+                      value={formData.num_required_aides}
+                      onChange={handleChange}
                       required
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     />
@@ -175,9 +205,10 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                     <input
                       type="number"
                       id="num_guests"
+                      name="num_guests"
                       min="0"
-                      value={numGuests}
-                      onChange={(e) => setNumGuests(e.target.value === "" ? "" : parseInt(e.target.value, 10))}
+                      value={formData.num_guests}
+                      onChange={handleChange}
                       required
                       className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     />
@@ -191,8 +222,9 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                   <input
                     type="text"
                     id="uniform"
-                    value={uniform}
-                    onChange={(e) => setUniform(e.target.value)}
+                    name="uniform"
+                    value={formData.uniform}
+                    onChange={handleChange}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                   />
                 </div>
@@ -203,9 +235,10 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                   </label>
                   <textarea
                     id="notes"
+                    name="notes"
                     rows={3}
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
+                    value={formData.notes}
+                    onChange={handleChange}
                     className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                   />
                 </div>
@@ -224,7 +257,7 @@ const CreateEventModal = ({ isOpen, onClose }) => {
                   disabled={isSubmitting}
                   className="rounded-md border border-transparent bg-blue-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 >
-                  {isSubmitting ? 'Creating...' : 'Create Event'}
+                  {isSubmitting ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>
@@ -235,4 +268,4 @@ const CreateEventModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default CreateEventModal;
+export default EditEventModal;

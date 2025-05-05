@@ -48,6 +48,10 @@ export default function CreateUser() {
     if (formData.password !== formData.confirm_password) {
       newErrors.confirm_password = "Passwords do not match";
     }
+    if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters"
+      newErrors.confirm_password = "Password must be at least 8 characters"
+    }
     if (!formData.date_of_birth) newErrors.date_of_birth = "Date of birth is required";
     
     // Phone validation
@@ -65,6 +69,7 @@ export default function CreateUser() {
     
     if (validate()) {
       console.log("Form Submitted");
+      console.log(formData.date_of_birth)
       await createNewUserAccount(formData);
       setShowSuccessModal(true);
     }

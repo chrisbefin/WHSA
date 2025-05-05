@@ -46,7 +46,9 @@ const usePocketbaseUsers = () => {
   // Create a new user
   const createNewUserAccount = useCallback(async (record) => {
     setError(null);
-    const DOB = new Date(record.DOB).toISOString();
+    console.log(record)
+    const DOB = new Date(record.date_of_birth).toISOString();
+    console.log(DOB)
     const data = {
       "password": record.password,
       "passwordConfirm": record.confirm_password,

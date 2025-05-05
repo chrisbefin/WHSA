@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/WHSA/static/css/main.5d1d3775.css",
-    "main.js": "/WHSA/static/js/main.fb26d55d.js",
+    "main.js": "/WHSA/static/js/main.ebe70442.js",
     "static/media/white-house.png": "/WHSA/static/media/white-house.5f2b5137768e8985b173.png",
     "index.html": "/WHSA/index.html",
     "main.5d1d3775.css.map": "/WHSA/static/css/main.5d1d3775.css.map",
-    "main.fb26d55d.js.map": "/WHSA/static/js/main.fb26d55d.js.map"
+    "main.ebe70442.js.map": "/WHSA/static/js/main.ebe70442.js.map"
   },
   "entrypoints": [
     "static/css/main.5d1d3775.css",
-    "static/js/main.fb26d55d.js"
+    "static/js/main.ebe70442.js"
   ]
 }

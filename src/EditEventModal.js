@@ -20,18 +20,29 @@ const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
 
   useEffect(() => {
     if (event) {
-      // Format the dates to yyyy-MM-ddThh:mm format for datetime-local input
-      const formatDateTime = (dateTimeStr) => {
-        if (!dateTimeStr) return '';
-        const dateTime = new Date(dateTimeStr);
-        return dateTime.toISOString().slice(0, 16);
+      // Convert UTC dates from the database to local time for display
+      const formatDateTimeLocal = (utcDateTimeStr) => {
+        if (!utcDateTimeStr) return '';
+        
+        // Create a date object from the UTC string
+        const utcDateTime = new Date(utcDateTimeStr);
+        
+        // Format to local datetime-local input format (YYYY-MM-DDThh:mm)
+        // We need to adjust for the timezone offset to ensure correct local time display
+        const year = utcDateTime.getFullYear();
+        const month = String(utcDateTime.getMonth() + 1).padStart(2, '0');
+        const day = String(utcDateTime.getDate()).padStart(2, '0');
+        const hours = String(utcDateTime.getHours()).padStart(2, '0');
+        const minutes = String(utcDateTime.getMinutes()).padStart(2, '0');
+        
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
       };
 
       setFormData({
         event_title: event.event_title || '',
-        report_time: event.report_time ? formatDateTime(event.report_time) : '',
-        start_time: event.start_time ? formatDateTime(event.start_time) : '',
-        end_time: event.end_time ? formatDateTime(event.end_time) : '',
+        report_time: event.report_time ? formatDateTimeLocal(event.report_time) : '',
+        start_time: event.start_time ? formatDateTimeLocal(event.start_time) : '',
+        end_time: event.end_time ? formatDateTimeLocal(event.end_time) : '',
         location: event.location || '',
         num_required_aides: event.num_required_aides || 1,
         num_guests: event.num_guests || 0,
@@ -65,10 +76,29 @@ const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
     setError(null);
 
     try {
-      await onSave({ ...event, ...formData });
+      // Convert local datetime inputs back to UTC for database storage
+      const convertToUTC = (localDateTimeStr) => {
+        if (!localDateTimeStr) return '';
+        
+        // Create a date object from the local datetime string
+        const localDate = new Date(localDateTimeStr);
+        
+        // Return as ISO string which is in UTC
+        return localDate.toISOString();
+      };
+
+      const utcFormData = {
+        ...formData,
+        report_time: convertToUTC(formData.report_time),
+        start_time: convertToUTC(formData.start_time),
+        end_time: convertToUTC(formData.end_time)
+      };
+
+      await onSave({ ...event, ...utcFormData });
       onClose();
     } catch (err) {
       setError("Failed to update event. Please try again.");
+      console.error("Error updating event:", err);
     } finally {
       setIsSubmitting(false);
     }
@@ -126,7 +156,7 @@ const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label htmlFor="report_time" className="block text-sm font-medium text-gray-700">
-                      Report Time
+                      Report Time (Local Time)
                     </label>
                     <input
                       type="datetime-local"
@@ -139,7 +169,7 @@ const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
                     />
                     
                     <label htmlFor="start_time" className="block text-sm font-medium text-gray-700">
-                      In Place Time
+                      In Place Time (Local Time)
                     </label>
                     <input
                       type="datetime-local"
@@ -152,7 +182,7 @@ const EditEventModal = ({ isOpen, onClose, event, onSave }) => {
                     />
                     
                     <label htmlFor="end_time" className="block text-sm font-medium text-gray-700">
-                      End Time
+                      End Time (Local Time)
                     </label>
                     <input
                       type="datetime-local"
